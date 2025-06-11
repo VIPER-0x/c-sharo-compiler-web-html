@@ -1,0 +1,327 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INNER CIRCLE VIPER C# COMPILER BY MR ALGORITHM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE',
+                    }
+                }
+            },
+            darkMode: 'class'
+        }
+    </script>
+    <style>
+        .code-editor {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-6xl">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold text-center mb-2 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                INNER CIRCLE VIPER C# COMPILER BY MR ALGORITHM
+            </h1>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-2">
+                Write, compile, and run C# code in your browser
+            </p>
+            <p class="text-center text-sm text-primary font-medium">
+                Telegram: @ICT_ADVANCED
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Code Input Section -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold">C# Code</h2>
+                    <div class="flex gap-2">
+                        <button id="clearBtn" class="px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md transition-colors">
+                            Clear
+                        </button>
+                        <button id="sampleBtn" class="px-3 py-1 text-sm bg-primary/10 text-primary hover:bg-primary/20 rounded-md transition-colors">
+                            Sample Code
+                        </button>
+                    </div>
+                </div>
+                
+                <textarea
+                    id="codeInput"
+                    class="w-full h-96 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 code-editor text-base resize-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    placeholder="Enter your C# code here..."
+                ></textarea>
+                
+                <button
+                    id="compileBtn"
+                    class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                    <span id="compileText">Compile & Run</span>
+                    <div id="compileSpinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                </button>
+            </div>
+
+            <!-- Output Section -->
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold">Output</h2>
+                
+                <div class="border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 min-h-96">
+                    <!-- Status -->
+                    <div id="statusBar" class="px-4 py-2 border-b border-gray-300 dark:border-gray-600 text-sm hidden">
+                        <span id="statusText"></span>
+                    </div>
+                    
+                    <!-- Output Content -->
+                    <div id="outputContent" class="p-4 h-full">
+                        <div id="outputPlaceholder" class="text-gray-500 dark:text-gray-400 text-center py-12">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                            </svg>
+                            <p>Click "Compile & Run" to see the output</p>
+                        </div>
+                        
+                        <div id="outputText" class="hidden">
+                            <div id="compilationResult" class="mb-4 hidden">
+                                <h3 class="font-semibold mb-2 text-green-600 dark:text-green-400">✓ Compilation Successful</h3>
+                            </div>
+                            
+                            <div id="executionResult" class="hidden">
+                                <h3 class="font-semibold mb-2">Program Output:</h3>
+                                <pre id="programOutput" class="bg-black text-green-400 p-3 rounded-md overflow-x-auto text-sm code-editor"></pre>
+                            </div>
+                            
+                            <div id="errorResult" class="hidden">
+                                <h3 class="font-semibold mb-2 text-red-600 dark:text-red-400">❌ Error</h3>
+                                <pre id="errorOutput" class="bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 p-3 rounded-md overflow-x-auto text-sm code-editor border border-red-200 dark:border-red-800"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-2">💡 Tips:</h3>
+            <ul class="text-blue-700 dark:text-blue-400 text-sm space-y-1">
+                <li>• Use <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">Console.WriteLine()</code> to output text</li>
+                <li>• Include necessary <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">using</code> statements</li>
+                <li>• Your code should include a <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">Main</code> method for execution</li>
+                <li>• Most standard .NET libraries are available</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode handling
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
+
+        // DOM elements
+        const codeInput = document.getElementById('codeInput');
+        const compileBtn = document.getElementById('compileBtn');
+        const compileText = document.getElementById('compileText');
+        const compileSpinner = document.getElementById('compileSpinner');
+        const statusBar = document.getElementById('statusBar');
+        const statusText = document.getElementById('statusText');
+        const outputPlaceholder = document.getElementById('outputPlaceholder');
+        const outputText = document.getElementById('outputText');
+        const compilationResult = document.getElementById('compilationResult');
+        const executionResult = document.getElementById('executionResult');
+        const errorResult = document.getElementById('errorResult');
+        const programOutput = document.getElementById('programOutput');
+        const errorOutput = document.getElementById('errorOutput');
+        const clearBtn = document.getElementById('clearBtn');
+        const sampleBtn = document.getElementById('sampleBtn');
+
+        // Sample C# code
+        const sampleCode = `using System;
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Hello, World!");
+        
+        // Basic operations
+        int a = 10;
+        int b = 20;
+        int sum = a + b;
+        
+        Console.WriteLine($"Sum of {a} and {b} is: {sum}");
+        
+        // Loop example
+        Console.WriteLine("Numbers 1 to 5:");
+        for (int i = 1; i <= 5; i++)
+        {
+            Console.WriteLine($"Number: {i}");
+        }
+        
+        // Array example
+        string[] fruits = {"Apple", "Banana", "Orange"};
+        Console.WriteLine("Fruits:");
+        foreach (string fruit in fruits)
+        {
+            Console.WriteLine($"- {fruit}");
+        }
+    }
+}`;
+
+        // Set initial sample code
+        codeInput.value = sampleCode;
+
+        // Event listeners
+        clearBtn.addEventListener('click', () => {
+            codeInput.value = '';
+            resetOutput();
+        });
+
+        sampleBtn.addEventListener('click', () => {
+            codeInput.value = sampleCode;
+            resetOutput();
+        });
+
+        compileBtn.addEventListener('click', compileAndRun);
+
+        // Register handler for bot responses
+        window.Poe.registerHandler("csharp-compiler", (result, context) => {
+            const msg = result.responses[0];
+            
+            if (msg.status === "error") {
+                showError("Compilation service error: " + (msg.statusText || "Unknown error"));
+                setCompileButtonState(false);
+            } else if (msg.status === "incomplete") {
+                // Keep showing loading state
+                updateStatus("Processing code...");
+            } else if (msg.status === "complete") {
+                processCompilerResponse(msg.content);
+                setCompileButtonState(false);
+            }
+        });
+
+        function resetOutput() {
+            outputPlaceholder.classList.remove('hidden');
+            outputText.classList.add('hidden');
+            statusBar.classList.add('hidden');
+            compilationResult.classList.add('hidden');
+            executionResult.classList.add('hidden');
+            errorResult.classList.add('hidden');
+        }
+
+        function updateStatus(message) {
+            statusText.textContent = message;
+            statusBar.classList.remove('hidden');
+        }
+
+        function setCompileButtonState(isLoading) {
+            compileBtn.disabled = isLoading;
+            if (isLoading) {
+                compileText.textContent = 'Compiling';
+                compileSpinner.classList.remove('hidden');
+            } else {
+                compileText.textContent = 'Compile & Run';
+                compileSpinner.classList.add('hidden');
+            }
+        }
+
+        function showError(errorMessage) {
+            outputPlaceholder.classList.add('hidden');
+            outputText.classList.remove('hidden');
+            errorResult.classList.remove('hidden');
+            errorOutput.textContent = errorMessage;
+            updateStatus("Compilation failed");
+        }
+
+        function showSuccess(output) {
+            outputPlaceholder.classList.add('hidden');
+            outputText.classList.remove('hidden');
+            compilationResult.classList.remove('hidden');
+            executionResult.classList.remove('hidden');
+            programOutput.textContent = output || '(No output)';
+            updateStatus("Execution completed successfully");
+        }
+
+        function processCompilerResponse(response) {
+            try {
+                // Try to parse as JSON first for structured response
+                let result;
+                try {
+                    result = JSON.parse(response);
+                } catch {
+                    // If not JSON, treat as plain text response
+                    result = { output: response };
+                }
+
+                if (result.error || (typeof result === 'string' && result.toLowerCase().includes('error'))) {
+                    showError(result.error || result);
+                } else {
+                    showSuccess(result.output || result);
+                }
+            } catch (error) {
+                showError("Failed to process compiler response: " + error.message);
+            }
+        }
+
+        async function compileAndRun() {
+            const code = codeInput.value.trim();
+            
+            if (!code) {
+                showError("Please enter some C# code to compile.");
+                return;
+            }
+
+            setCompileButtonState(true);
+            updateStatus("Sending code to compiler...");
+            resetOutput();
+
+            const prompt = `@Claude-Sonnet-4 Please compile and run the following C# code. Provide ONLY raw JSON in your response with no explanations, additional text, or code block formatting (no \`\`\`).
+
+The JSON should have this format:
+- If successful: {"output": "program output here"}
+- If there are compilation or runtime errors: {"error": "detailed error message here"}
+
+C# Code to compile and run:
+\`\`\`csharp
+${code}
+\`\`\``;
+
+            try {
+                await window.Poe.sendUserMessage(prompt, {
+                    handler: "csharp-compiler",
+                    stream: false,
+                    openChat: false
+                });
+            } catch (err) {
+                showError("Failed to send code for compilation: " + err.message);
+                setCompileButtonState(false);
+            }
+        }
+    </script>
+</body>
+</html>
